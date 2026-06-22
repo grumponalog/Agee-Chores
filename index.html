@@ -102,6 +102,11 @@
   .grid tfoot td{font-weight:800;font-size:16px;border-top:2px solid var(--line);border-bottom:none;padding-top:12px;color:var(--mute)}
   .grid tfoot td.done14{color:var(--arlo)}
   .kidh{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--ink);font-size:14px}
+  /* kid page links */
+  .kidlinks{display:flex;gap:10px;flex-wrap:wrap}
+  .kidlinks a{flex:1 1 0;min-width:120px;text-decoration:none;text-align:center;border-radius:14px;
+    padding:14px 10px;font-weight:800;font-size:16px;color:#fff;display:block}
+  .kidlinks a small{display:block;font-weight:600;font-size:12px;opacity:.9;margin-top:2px}
   .grid tfoot tr.paidrow td{border-top:none;padding-top:4px}
   .grid tfoot tr.paidrow .day{color:#92400e;font-weight:800}
   .grid tfoot tr.paidrow input{width:26px;height:26px;cursor:pointer;accent-color:var(--gold)}
@@ -158,6 +163,16 @@
       </tfoot>
     </table>
     <p class="note" style="margin-top:14px">Check a box when that day's SWEEP, zone jobs, and daily basics are all done. Each kid earns <b>$20</b> for the cycle — tick <b>Paid $20?</b> once you've handed it over.</p>
+  </div>
+
+  <div class="card">
+    <h2>Each Kid's Daily Page</h2>
+    <p class="sub">Send each kid their own link — their checklist for the day</p>
+    <div class="kidlinks">
+      <a href="/ezra" style="background:var(--ezra)">Ezra<small>open my chores</small></a>
+      <a href="/arlo" style="background:var(--arlo)">Arlo<small>open my chores</small></a>
+      <a href="/everett" style="background:var(--ever)">Everett<small>open my chores</small></a>
+    </div>
   </div>
 
   <div class="card">

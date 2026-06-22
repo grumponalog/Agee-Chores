@@ -1,0 +1,58 @@
+:root{
+  --ink:#1f2937; --mute:#6b7280; --bg:#f4f7fb; --paper:#fff;
+  --gold:#f59e0b; --line:#e5e7eb;
+  --kid:#2563eb; --kid-light:#e7efff; --kid-dark:#1e3a8a;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.4;padding:16px}
+.wrap{max-width:620px;margin:0 auto}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:18px}
+h2{font-size:21px;margin:0 0 2px}
+.sub{color:var(--mute);font-size:14px;margin:0 0 14px}
+
+/* hero */
+.hero{background:linear-gradient(160deg,var(--kid),var(--kid-dark));color:#fff;border-radius:24px;
+  padding:26px 22px;text-align:center;margin-bottom:18px}
+.hero h1{margin:0;font-size:clamp(28px,8vw,40px)}
+.hero .date{color:rgba(255,255,255,.85);font-size:16px;margin-top:6px}
+.hero .room{display:inline-block;margin-top:14px;background:#fff;color:var(--kid-dark);
+  font-weight:800;font-size:15px;border-radius:20px;padding:8px 18px}
+.hero .room small{display:block;color:var(--mute);font-weight:600;font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+
+/* checklist */
+.checks{list-style:none;margin:0;padding:0}
+.checks li{margin:0 0 4px}
+.checks label{display:flex;align-items:center;gap:14px;padding:13px 12px;border-radius:12px;cursor:pointer;
+  font-size:18px;border:1px solid var(--line)}
+.checks label:active{background:#f3f6fa}
+.checks input{width:26px;height:26px;flex:0 0 auto;accent-color:var(--kid)}
+.checks input:checked + span{color:var(--mute);text-decoration:line-through}
+.checks .grp{margin:16px 0 8px;font-size:12px;font-weight:800;letter-spacing:1px;color:var(--mute);text-transform:uppercase}
+.donebar{margin-top:16px;text-align:center;font-weight:800;font-size:18px;color:var(--mute)}
+.donebar.alldone{color:#15803d}
+.celebrate{margin-top:8px;text-align:center;background:#dcfce7;color:#15803d;border-radius:12px;
+  padding:12px;font-weight:800;display:none}
+.celebrate.show{display:block}
+.status{font-size:13px;text-align:center;min-height:18px;margin-top:8px;color:var(--mute)}
+
+/* zone jobs + sweep reuse */
+.jobs{list-style:none;margin:10px 0 0;padding:0}
+.jobs li{display:flex;gap:10px;align-items:flex-start;font-size:16px;padding:6px 0}
+.jobs li .b{width:8px;height:8px;border-radius:50%;margin-top:8px;flex:0 0 auto;background:var(--kid)}
+.pay{display:flex;justify-content:space-around;text-align:center;gap:10px}
+.pay .n{font-size:34px;font-weight:800;color:var(--kid)}
+.pay .l{font-size:13px;color:var(--mute)}
+.pill{display:inline-block;font-weight:800;font-size:14px;border-radius:20px;padding:6px 14px}
+.pill.paid{background:#dcfce7;color:#15803d}
+.pill.pending{background:#fff7ed;color:#b45309}
+.sweep{list-style:none;margin:0;padding:0}
+.sweep li{display:flex;gap:12px;align-items:center;padding:8px 0;border-top:1px solid #eef1f5}
+.sweep li:first-child{border-top:none}
+.sweep .badge{width:38px;height:38px;border-radius:50%;background:var(--kid-light);color:var(--kid-dark);
+  font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.sweep .t{font-size:15px}.sweep .t b{display:block}
+.homebtn{display:block;text-align:center;text-decoration:none;background:#fff;border:1px solid var(--line);
+  color:var(--ink);border-radius:14px;padding:13px;font-weight:700;font-size:16px}
+footer{text-align:center;color:var(--mute);font-size:13px;margin:4px 0 26px}
