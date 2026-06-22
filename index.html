@@ -102,6 +102,13 @@
   .grid tfoot td{font-weight:800;font-size:16px;border-top:2px solid var(--line);border-bottom:none;padding-top:12px;color:var(--mute)}
   .grid tfoot td.done14{color:var(--arlo)}
   .kidh{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--ink);font-size:14px}
+  .grid tfoot tr.paidrow td{border-top:none;padding-top:4px}
+  .grid tfoot tr.paidrow .day{color:#92400e;font-weight:800}
+  .grid tfoot tr.paidrow input{width:26px;height:26px;cursor:pointer;accent-color:var(--gold)}
+  /* header chip name + this-week room */
+  .chip .cn{display:flex;flex-direction:column;align-items:flex-start;line-height:1.12}
+  .chip .cn .nm{font-weight:800;font-size:15px}
+  .chip .cn .rm{font-weight:600;font-size:11.5px;color:var(--mute);margin-top:1px}
 </style>
 </head>
 <body>
@@ -111,9 +118,9 @@
     <h1>SWEEP DAILY CHORE CHART</h1>
     <p>Reset every room the pro-cleaner way</p>
     <div class="chips">
-      <span class="chip"><span class="dot" style="background:var(--ezra)"></span>Ezra · 12</span>
-      <span class="chip"><span class="dot" style="background:var(--arlo)"></span>Arlo · 9</span>
-      <span class="chip"><span class="dot" style="background:var(--ever)"></span>Everett · 7</span>
+      <span class="chip"><span class="dot" style="background:var(--ezra)"></span><span class="cn"><span class="nm">Ezra</span><span class="rm" id="room_ezra">—</span></span></span>
+      <span class="chip"><span class="dot" style="background:var(--arlo)"></span><span class="cn"><span class="nm">Arlo</span><span class="rm" id="room_arlo">—</span></span></span>
+      <span class="chip"><span class="dot" style="background:var(--ever)"></span><span class="cn"><span class="nm">Everett</span><span class="rm" id="room_everett">—</span></span></span>
     </div>
   </div>
 
@@ -135,14 +142,22 @@
         <th><span class="kidh"><span class="dot" style="background:var(--ever)"></span>Everett</span></th>
       </tr></thead>
       <tbody id="rows"></tbody>
-      <tfoot><tr>
-        <td class="day">Days done</td>
-        <td id="tot_ezra">0 / 14</td>
-        <td id="tot_arlo">0 / 14</td>
-        <td id="tot_everett">0 / 14</td>
-      </tr></tfoot>
+      <tfoot>
+        <tr>
+          <td class="day">Days done</td>
+          <td id="tot_ezra">0 / 14</td>
+          <td id="tot_arlo">0 / 14</td>
+          <td id="tot_everett">0 / 14</td>
+        </tr>
+        <tr class="paidrow">
+          <td class="day">Paid $20?</td>
+          <td><input type="checkbox" class="cbx" data-kid="ezra" data-day="14"></td>
+          <td><input type="checkbox" class="cbx" data-kid="arlo" data-day="14"></td>
+          <td><input type="checkbox" class="cbx" data-kid="everett" data-day="14"></td>
+        </tr>
+      </tfoot>
     </table>
-    <p class="note" style="margin-top:14px">Check a box when that day's SWEEP, zone jobs, and daily basics are all done. Each kid earns <b>$20</b> for the cycle — payday is every 2 weeks.</p>
+    <p class="note" style="margin-top:14px">Check a box when that day's SWEEP, zone jobs, and daily basics are all done. Each kid earns <b>$20</b> for the cycle — tick <b>Paid $20?</b> once you've handed it over.</p>
   </div>
 
   <div class="card">
@@ -166,9 +181,9 @@
         <th><span class="dot" style="background:#fb923c"></span>EVERETT</th>
       </tr></thead>
       <tbody>
-        <tr class="this"><td class="wk">Week 1</td><td><span class="zone zk">Kitchen &amp; Dining</span></td><td><span class="zone zl">Living Room &amp; Entry</span></td><td><span class="zone zb">Bath &amp; Hallway</span></td></tr>
-        <tr><td class="wk">Week 2</td><td><span class="zone zb">Bath &amp; Hallway</span></td><td><span class="zone zk">Kitchen &amp; Dining</span></td><td><span class="zone zl">Living Room &amp; Entry</span></td></tr>
-        <tr><td class="wk">Week 3</td><td><span class="zone zl">Living Room &amp; Entry</span></td><td><span class="zone zb">Bath &amp; Hallway</span></td><td><span class="zone zk">Kitchen &amp; Dining</span></td></tr>
+        <tr data-week="0"><td class="wk">Week 1</td><td><span class="zone zk">Kitchen &amp; Dining</span></td><td><span class="zone zl">Living Room &amp; Entry</span></td><td><span class="zone zb">Bath &amp; Hallway</span></td></tr>
+        <tr data-week="1"><td class="wk">Week 2</td><td><span class="zone zb">Bath &amp; Hallway</span></td><td><span class="zone zk">Kitchen &amp; Dining</span></td><td><span class="zone zl">Living Room &amp; Entry</span></td></tr>
+        <tr data-week="2"><td class="wk">Week 3</td><td><span class="zone zl">Living Room &amp; Entry</span></td><td><span class="zone zb">Bath &amp; Hallway</span></td><td><span class="zone zk">Kitchen &amp; Dining</span></td></tr>
       </tbody>
     </table>
     <p class="note">Everett gets a grown-up's help with mopping and anything heavy.</p>
@@ -266,6 +281,20 @@
   function setStatus(t,ok){statusEl.textContent=t;statusEl.style.color=ok===false?"#b91c1c":(ok===true?"#15803d":"#6b7280");}
   const cycleStart=()=>addDays(ANCHOR,cycleIndex*14);
 
+  // Weekly zone rotation (3-week cycle). Week 0 = anchor week.
+  const ROT=[
+    {ezra:"Kitchen & Dining",arlo:"Living Room & Entry",everett:"Bath & Hallway"},
+    {ezra:"Bath & Hallway",arlo:"Kitchen & Dining",everett:"Living Room & Entry"},
+    {ezra:"Living Room & Entry",arlo:"Bath & Hallway",everett:"Kitchen & Dining"}
+  ];
+  function setupWeek(){
+    const weeks=Math.floor((utc(today)-utc(ANCHOR))/(7*86400000));
+    const wi=((weeks%3)+3)%3, r=ROT[wi];
+    const set=(id,t)=>{const el=document.getElementById(id);if(el)el.textContent=t;};
+    set("room_ezra",r.ezra); set("room_arlo",r.arlo); set("room_everett",r.everett);
+    document.querySelectorAll('tr[data-week]').forEach(tr=>tr.classList.toggle("this",Number(tr.dataset.week)===wi));
+  }
+
   function render(){
     const start=cycleStart(), end=addDays(start,13);
     document.getElementById("cycRange").textContent=
@@ -277,10 +306,9 @@
       if(d.getDay()===0||d.getDay()===6)tr.classList.add("weekend");
       if(ymd(d)===todayStr)tr.classList.add("today");
       let html='<td class="day">'+MON[d.getMonth()]+' '+d.getDate()+'<span class="dow">'+DOW[d.getDay()]+'</span></td>';
-      KIDS.forEach(([key,,cls])=>{html+='<td class="'+cls+'"><input type="checkbox" data-kid="'+key+'" data-day="'+i+'"></td>';});
+      KIDS.forEach(([key,,cls])=>{html+='<td class="'+cls+'"><input type="checkbox" class="cbx" data-kid="'+key+'" data-day="'+i+'"></td>';});
       tr.innerHTML=html; rows.appendChild(tr);
     }
-    rows.querySelectorAll("input").forEach(cb=>cb.addEventListener("change",onToggle));
     updateTotals(); load();
   }
   function updateTotals(){
@@ -295,7 +323,7 @@
     const {data,error}=await db.from("chore_log").select("kid,day_index,done").eq("cycle_start",ymd(cycleStart()));
     if(error){setStatus("Offline — changes may not save",false);return;}
     const map={}; (data||[]).forEach(r=>{map[r.kid+"_"+r.day_index]=r.done;});
-    document.querySelectorAll('#rows input').forEach(cb=>{cb.checked=!!map[cb.dataset.kid+"_"+cb.dataset.day];});
+    document.querySelectorAll('.cbx').forEach(cb=>{cb.checked=!!map[cb.dataset.kid+"_"+cb.dataset.day];});
     updateTotals(); setStatus("Synced ✓",true);
   }
   async function onToggle(e){
@@ -305,9 +333,10 @@
     if(error){cb.checked=!done;updateTotals();setStatus("Couldn't save — tap again",false);}
     else setStatus("Saved ✓",true);
   }
+  document.addEventListener("change",e=>{if(e.target.classList&&e.target.classList.contains("cbx"))onToggle(e);});
   document.getElementById("prevCyc").addEventListener("click",()=>{if(cycleIndex>0){cycleIndex--;render();}});
   document.getElementById("nextCyc").addEventListener("click",()=>{cycleIndex++;render();});
-  render();
+  setupWeek(); render();
 })();
 </script>
 </body>
