@@ -64,6 +64,11 @@
   function jobsHtml(){
     return (ZONEJOBS[room]||[]).map(j=>'<li><span class="b"></span>'+esc(j)+'</li>').join("");
   }
+  function navHtml(){
+    const items=[["/","Home",false],["/ezra","Ezra",kidKey==="ezra"],
+                 ["/arlo","Arlo",kidKey==="arlo"],["/everett","Everett",kidKey==="everett"]];
+    return '<nav class="topnav">'+items.map(([h,t,a])=>'<a href="'+h+'"'+(a?' class="active"':'')+'>'+t+'</a>').join("")+'</nav>';
+  }
   function tasksHtml(){
     let h='<div class="grp">Every day</div>';
     tasks.forEach((t,i)=>{
@@ -75,7 +80,8 @@
   }
 
   document.getElementById("app").innerHTML=
-    '<div class="hero">'
+    navHtml()
+    +'<div class="hero">'
       +'<h1>Hi '+esc(kid.name)+'!</h1>'
       +'<div class="date">'+DOWN[today.getDay()]+', '+MONN[today.getMonth()]+' '+today.getDate()+'</div>'
       +'<div class="room"><small>Your room this week</small>'+esc(room)+'</div>'

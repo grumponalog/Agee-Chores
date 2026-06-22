@@ -102,6 +102,11 @@
   .grid tfoot td{font-weight:800;font-size:16px;border-top:2px solid var(--line);border-bottom:none;padding-top:12px;color:var(--mute)}
   .grid tfoot td.done14{color:var(--arlo)}
   .kidh{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--ink);font-size:14px}
+  /* top menu */
+  .topnav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 0 18px}
+  .topnav a{text-decoration:none;color:var(--ink);background:#fff;border:1px solid var(--line);
+    border-radius:999px;padding:9px 18px;font-weight:700;font-size:15px}
+  .topnav a.active{background:var(--ink);color:#fff;border-color:var(--ink)}
   /* kid page links */
   .kidlinks{display:flex;gap:10px;flex-wrap:wrap}
   .kidlinks a{flex:1 1 0;min-width:120px;text-decoration:none;text-align:center;border-radius:14px;
@@ -118,6 +123,13 @@
 </head>
 <body>
 <div class="wrap">
+
+  <nav class="topnav">
+    <a href="/" class="active">Home</a>
+    <a href="/ezra">Ezra</a>
+    <a href="/arlo">Arlo</a>
+    <a href="/everett">Everett</a>
+  </nav>
 
   <div class="hero">
     <h1>SWEEP DAILY CHORE CHART</h1>
