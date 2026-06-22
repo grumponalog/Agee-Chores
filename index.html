@@ -112,6 +112,21 @@
   .kidlinks a{flex:1 1 0;min-width:120px;text-decoration:none;text-align:center;border-radius:14px;
     padding:14px 10px;font-weight:800;font-size:16px;color:#fff;display:block}
   .kidlinks a small{display:block;font-weight:600;font-size:12px;opacity:.9;margin-top:2px}
+  /* family reward */
+  .reward{background:linear-gradient(160deg,#fffdf5,#fdf2f8);border-color:#fcd34d}
+  .reward .rbar{height:18px;background:#eef1f5;border-radius:999px;overflow:hidden;margin:6px 0 8px}
+  .reward .rfill{height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#16a34a);transition:width .5s ease}
+  .reward .rprog{text-align:center;font-weight:800;color:var(--mute)}
+  .reward .rkids{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0 0}
+  .reward .rk{font-size:13px;font-weight:800;border-radius:999px;padding:7px 13px;background:#f3f6fa;color:var(--mute)}
+  .reward .rk.done{background:#dcfce7;color:#15803d}
+  .reward .rwin{display:none;text-align:center;background:#dcfce7;color:#15803d;font-weight:800;border-radius:12px;padding:13px;margin-top:14px;font-size:18px}
+  .reward.earned .rwin{display:block;animation:pop .5s ease}
+  .reward .rclaim{display:none;align-items:center;gap:10px;justify-content:center;margin-top:12px;font-weight:700;cursor:pointer}
+  .reward.earned .rclaim{display:flex}
+  .reward .rclaim input{width:24px;height:24px;accent-color:var(--gold)}
+  @keyframes pop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+  .confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999}
   .grid tfoot tr.paidrow td{border-top:none;padding-top:4px}
   .grid tfoot tr.paidrow .day{color:#92400e;font-weight:800}
   .grid tfoot tr.paidrow input{width:26px;height:26px;cursor:pointer;accent-color:var(--gold)}
@@ -175,6 +190,16 @@
       </tfoot>
     </table>
     <p class="note" style="margin-top:14px">Check a box when that day's SWEEP, zone jobs, and daily basics are all done. Each kid earns <b>$20</b> for the cycle — tick <b>Paid $20?</b> once you've handed it over.</p>
+  </div>
+
+  <div class="card reward" id="reward">
+    <h2>Family Reward 🍦</h2>
+    <p class="sub">If <b>everyone</b> finishes all 14 days this cycle, the whole crew earns a special outing — ice cream, breakfast out, you pick!</p>
+    <div class="rbar"><div class="rfill" id="rfill"></div></div>
+    <div class="rprog" id="rprog">— / 42 chore-days done</div>
+    <div class="rkids" id="rkids"></div>
+    <div class="rwin">🎉 Trip earned! Time to celebrate together.</div>
+    <label class="rclaim"><input type="checkbox" class="cbx" data-kid="family" data-day="14"> We went on our trip ✓</label>
   </div>
 
   <div class="card">
@@ -351,7 +376,33 @@
     if(error){setStatus("Offline — changes may not save",false);return;}
     const map={}; (data||[]).forEach(r=>{map[r.kid+"_"+r.day_index]=r.done;});
     document.querySelectorAll('.cbx').forEach(cb=>{cb.checked=!!map[cb.dataset.kid+"_"+cb.dataset.day];});
-    updateTotals(); setStatus("Synced ✓",true);
+    updateTotals(); updateReward(data||[]); setStatus("Synced ✓",true);
+  }
+  let wasEarned=null;
+  function updateReward(rows){
+    const need=KIDS.length*14, per={ezra:0,arlo:0,everett:0}; let total=0;
+    rows.forEach(r=>{if(r.done&&r.day_index>=0&&r.day_index<=13&&per[r.kid]!=null){per[r.kid]++;total++;}});
+    document.getElementById("rfill").style.width=Math.round(total/need*100)+"%";
+    document.getElementById("rprog").textContent=total+" / "+need+" chore-days done";
+    document.getElementById("rkids").innerHTML=KIDS.map(([k,nm])=>{const c=per[k]||0;
+      return '<span class="rk'+(c>=14?' done':'')+'">'+nm+' '+c+'/14'+(c>=14?' ✓':'')+'</span>';}).join("");
+    const earned=total>=need;
+    document.getElementById("reward").classList.toggle("earned",earned);
+    if(earned&&wasEarned===false) confetti();
+    wasEarned=earned;
+  }
+  function confetti(){
+    const c=document.createElement("canvas"); c.className="confetti";
+    c.width=window.innerWidth; c.height=window.innerHeight; document.body.appendChild(c);
+    const ctx=c.getContext("2d"), cols=["#f59e0b","#16a34a","#ef4444","#3b82f6","#a855f7","#ec4899"], P=[];
+    for(let i=0;i<180;i++)P.push({x:Math.random()*c.width,y:-20-Math.random()*c.height*0.5,r:6+Math.random()*8,
+      col:cols[i%cols.length],vy:3+Math.random()*5,vx:-3+Math.random()*6,rot:Math.random()*6.28,vr:-0.25+Math.random()*0.5});
+    const t0=performance.now();
+    (function f(now){const el=now-t0;ctx.clearRect(0,0,c.width,c.height);
+      P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.06;p.rot+=p.vr;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+        ctx.fillStyle=p.col;ctx.globalAlpha=el<2400?1:Math.max(0,1-(el-2400)/600);
+        ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6);ctx.restore();});
+      if(el<3000)requestAnimationFrame(f);else c.remove();})(t0);
   }
   async function onToggle(e){
     const cb=e.target, done=cb.checked; updateTotals(); setStatus("Saving…");

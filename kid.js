@@ -133,6 +133,14 @@
       +'<div class="pay"><div><div class="n" id="daysDone">–</div><div class="l">days done / 14</div></div>'
       +'<div><div class="n">$20</div><div class="l" id="payState">–</div></div></div>'
     +'</div>'
+    +'<div class="card reward" id="teamCard">'
+      +'<h2>Family goal 🍦</h2>'
+      +'<p class="sub">If <b>everyone</b> finishes all 14 days, the whole crew earns a special outing!</p>'
+      +'<div class="rbar"><div class="rfill" id="rfill"></div></div>'
+      +'<div class="rprog" id="rprog">…</div>'
+      +'<div class="rkids" id="rkids"></div>'
+      +'<div class="rwin">🎉 Trip earned! Time to celebrate together.</div>'
+    +'</div>'
     +'<div class="card">'
       +'<h2>How to SWEEP a room</h2>'
       +'<ul class="sweep">'+sweepHtml()+'</ul>'
@@ -171,7 +179,7 @@
     const row={cycle_start:cycleStartStr,kid:kidKey,day_index:dIdx,done:all,updated_at:new Date().toISOString()};
     const {error}=await db.from("chore_log").upsert(row,{onConflict:"cycle_start,kid,day_index"});
     if(error){setStatus("Couldn't save — try again",false);lastAll=null;}
-    else{setStatus(all?"Today saved ✓":"Saved ✓",true);loadProgress();}
+    else{setStatus(all?"Today saved ✓":"Saved ✓",true);loadProgress();loadTeam();}
   }
   let wasAll=false;
   boxes.forEach(b=>b.addEventListener("change",()=>{
@@ -192,8 +200,21 @@
       ? '<span class="pill paid">Paid</span>' : '<span class="pill pending">Pending</span>';
   }
 
+  async function loadTeam(){
+    const {data,error}=await db.from("chore_log").select("kid,day_index,done").eq("cycle_start",cycleStartStr);
+    if(error) return;
+    const need=3*14, per={ezra:0,arlo:0,everett:0}; let total=0;
+    (data||[]).forEach(x=>{if(x.done&&x.day_index>=0&&x.day_index<=13&&per[x.kid]!=null){per[x.kid]++;total++;}});
+    document.getElementById("rfill").style.width=Math.round(total/need*100)+"%";
+    document.getElementById("rprog").textContent=total+" / "+need+" chore-days done";
+    document.getElementById("rkids").innerHTML=Object.keys(KIDS).map(k=>{const c=per[k]||0;
+      return '<span class="rk'+(c>=14?' done':'')+'">'+KIDS[k].name+' '+c+'/14'+(c>=14?' ✓':'')+'</span>';}).join("");
+    document.getElementById("teamCard").classList.toggle("earned",total>=need);
+  }
+
   // init
   loadLocal();
   lastAll=wasAll=refreshBar();   // reflect restored state; no confetti / no write on load
   loadProgress();                // day flag only changes when the kid toggles a task
+  loadTeam();
 })();
