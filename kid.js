@@ -69,6 +69,34 @@
                  ["/arlo","Arlo",kidKey==="arlo"],["/everett","Everett",kidKey==="everett"]];
     return '<nav class="topnav">'+items.map(([h,t,a])=>'<a href="'+h+'"'+(a?' class="active"':'')+'>'+t+'</a>').join("")+'</nav>';
   }
+
+  // confetti burst (no libraries)
+  const CHEERS=["Way to go","Boom — crushed it","Superstar","You did it","High five","Champion","Nailed it","Legend"];
+  function partyBanner(){
+    const cheer=CHEERS[Math.floor(Math.random()*CHEERS.length)];
+    document.getElementById("celebrate").textContent="🎉 "+cheer+", "+kid.name+"!";
+  }
+  function confetti(){
+    const c=document.createElement("canvas"); c.className="confetti";
+    c.width=window.innerWidth; c.height=window.innerHeight;
+    document.body.appendChild(c);
+    const ctx=c.getContext("2d");
+    const cols=[kid.color,"#f59e0b","#16a34a","#ef4444","#3b82f6","#a855f7","#ec4899"];
+    const N=160, P=[];
+    for(let i=0;i<N;i++)P.push({x:Math.random()*c.width, y:-20-Math.random()*c.height*0.5,
+      r:6+Math.random()*8, col:cols[i%cols.length], vy:3+Math.random()*5, vx:-3+Math.random()*6,
+      rot:Math.random()*6.28, vr:-0.25+Math.random()*0.5});
+    const t0=performance.now();
+    (function frame(now){
+      const el=now-t0; ctx.clearRect(0,0,c.width,c.height);
+      P.forEach(p=>{p.x+=p.vx; p.y+=p.vy; p.vy+=0.06; p.rot+=p.vr;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.col;
+        ctx.globalAlpha=el<2200?1:Math.max(0,1-(el-2200)/600);
+        ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6); ctx.restore();});
+      if(el<2800) requestAnimationFrame(frame); else c.remove();
+    })(t0);
+  }
+  function celebrate(){ partyBanner(); confetti(); }
   function tasksHtml(){
     let h='<div class="grp">Every day</div>';
     tasks.forEach((t,i)=>{
@@ -145,7 +173,14 @@
     if(error){setStatus("Couldn't save — try again",false);lastAll=null;}
     else{setStatus(all?"Today saved ✓":"Saved ✓",true);loadProgress();}
   }
-  boxes.forEach(b=>b.addEventListener("change",()=>{saveLocal();syncDay(refreshBar());}));
+  let wasAll=false;
+  boxes.forEach(b=>b.addEventListener("change",()=>{
+    saveLocal();
+    const all=refreshBar();
+    if(all && !wasAll) celebrate();   // fire only on the transition to all-done
+    wasAll=all;
+    syncDay(all);
+  }));
 
   async function loadProgress(){
     const {data,error}=await db.from("chore_log").select("day_index,done").eq("cycle_start",cycleStartStr).eq("kid",kidKey);
@@ -159,6 +194,6 @@
 
   // init
   loadLocal();
-  lastAll=refreshBar();    // reflect restored state without writing on load
-  loadProgress();          // day flag only changes when the kid toggles a task
+  lastAll=wasAll=refreshBar();   // reflect restored state; no confetti / no write on load
+  loadProgress();                // day flag only changes when the kid toggles a task
 })();

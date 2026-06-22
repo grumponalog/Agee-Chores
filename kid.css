@@ -37,8 +37,10 @@ h2{font-size:21px;margin:0 0 2px}
 .donebar{margin-top:16px;text-align:center;font-weight:800;font-size:18px;color:var(--mute)}
 .donebar.alldone{color:#15803d}
 .celebrate{margin-top:8px;text-align:center;background:#dcfce7;color:#15803d;border-radius:12px;
-  padding:12px;font-weight:800;display:none}
-.celebrate.show{display:block}
+  padding:14px;font-weight:800;font-size:18px;display:none}
+.celebrate.show{display:block;animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999}
 .status{font-size:13px;text-align:center;min-height:18px;margin-top:8px;color:var(--mute)}
 
 /* zone jobs + sweep reuse */
